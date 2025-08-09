@@ -106,18 +106,18 @@ function App() {
             {error && <p className="text-red-600 text-sm">{error}</p>}
           </div>
           <h2 className='text-lg font-bold mt-5'>Your Todos</h2>
-          <div className="todos">
+          <div className="todos"> 
             {todos.map(item => {
-              return (
-                <div key={item.id} className="todo flex justify-between w-1/4 my-3">
-                  <input name={item.id} onChange={handleCheckbox} type="checkbox" checked={item.isCompleted} id="" className="" />
+              return <div key={item.id} className="todo flex justify-between w-1/4 my-3 gap-2">
+                  <div className='flex gap-5'>
+                  <input name={item.id} onChange={handleCheckbox} type="checkbox" checked={item.isCompleted} id="" />
                   <div className={item.isCompleted ? "line-through" : ""}>{item.todo}</div>
-                  <div className="buttons">
-                    <button onClick={() => handleEdit(item.id)} className=' py-1 px-3 rounded-md mx-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold '>Edit</button>
+                  </div>
+                  <div className="buttons flex h-full">
+                    <button onClick={() => handleEdit(item.id)} className='p-2 py-1 px-3 text-sm rounded-md mx-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold '>Edit</button>
                     <button onClick={(e) => handleDelete(e, item.id)} className='py-1 px-3 rounded-md mx-2  text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold '>Delete</button>
                   </div>
                 </div>
-              )
             })}
           </div>
         </div>
