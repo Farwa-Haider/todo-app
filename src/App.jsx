@@ -1,8 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
+import { MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import './App.css'
 import Navbar from './Components/Navbar';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,20 +22,41 @@ function App() {
   // }
 
   const [todo, setTodo] = useState("")
-  const [todos, setTodos] = useState([])
   const [error, seterror] = useState("")
+  const [showcompleted, setshowcompleted] = useState(true)
 
   const [showConfirm, setshowConfirm] = useState(false)
   const [deleteId, setdeleteId] = useState(null)
 
-  const [EditingId, setEditingId] = useState(null)
-  const [EditText, setEditText] = useState("")
+  const [editingId, seteditingId] = useState(null)
+
+  const [todos, settodos] = useState(() => {
+    const saved = localStorage.getItem("todos")
+    return saved ? JSON.parse(saved) : []
+  }
+  )
+
+  // useEffect(() => {
+  //   // Page load hone pe data load
+  //   let todoString = localStorage.getItem("todos");
+  //   if (todoString) {
+  //     settodos((JSON.parse(todoString)) || []) ;
+  //   }
+  // }, []);
+
+  // Jab todos change hon, update localStorage
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+    console.log("Updated todos:", todos);
+  }, [todos]);
+
 
   const handleEdit = (id) => {
     // finding todo which is going to be edit
     const todoToEdit = todos.find(t => t.id === id);
-    setEditingId(id)
-    setEditText(todoToEdit.todo)
+    setTodo(todoToEdit.todo)
+    seteditingId(id)
+    // setEditText(todoToEdit.todo)
   }
 
   const handleDelete = (e, id) => {
@@ -43,7 +66,7 @@ function App() {
 
   const confirmDelete = () => {
     const NewTodos = todos.filter(item => item.id !== deleteId);
-    setTodos(NewTodos);
+    settodos(NewTodos);
     setshowConfirm(false);
     setdeleteId(null);
   };
@@ -61,9 +84,15 @@ function App() {
     }
     // Clear error if todo is valid
     seterror("")
-    setTodos([...todos, { id: uuidv4(), todo, isCompleted: false }])
-    setTodo("")
-    console.log(todos)
+    if (editingId) {
+      const updatedTodos = todos.map(t => t.id === editingId ? { ...t, todo } : t)
+      settodos(updatedTodos)
+      seteditingId(null)
+    } else {
+      settodos([...todos, { id: uuidv4(), todo, isCompleted: false }])
+    }
+    setTodo(""); // input clear
+    // console.log(todos)
   }
 
   const handleChange = (e) => {
@@ -80,48 +109,83 @@ function App() {
     console.log(`The index is ${index}`)
     let NewTodos = [...todos]
     NewTodos[index].isCompleted = !NewTodos[index].isCompleted
-    setTodos(NewTodos)
+    settodos(NewTodos)
+  }
+
+  const ToggleCompleted = (e) => {
+    setshowcompleted(!showcompleted)
   }
 
   return (
     <>
       <Navbar />
-      {/* {todos.map(todo=>{
-        return <Todo todo={todo}/>
-      })} */}
 
-      {/* <h1 className='text: font-bold text-lg '>TODO LIST</h1> */}
-      {/* {todos.map(todo => (
-        <div key={todo.title}>
-        <div className="todo">{todo.title}</div>
-        <div className="todo">{todo.desc}</div>
-        </div>
-        ))} */}
-      <div className='container mx-10 rounded-2xl p-5 bg-slate-300 min-h-80 '>
+      <div className="container rounded-2xl p-5 bg-slate-300 min-h-[calc(100vh-5.5rem)] w-full sm:w-11/12 md:w-80vw lg:w-1/2 mx-auto">
+        <h1 className='font-bold text-center text-2xl'>i-Tasks Manage your To-do's at one place</h1>
         <div className="addTodo my-5">
-          <h2 className='text-lg font-bold'>Add a Todo</h2>
-          <input onChange={handleChange} value={todo} type="text" className='border-2 w-80 ' />
-          <button onClick={handleSave} className=' text-white cursor-pointer px-6 py-1 bg-violet-800 hover:bg-violet-950 rounded-md mx-6 mt-2 mb-3 font-bold '>Save</button>
+          <h1 className="text-xl font-bold">Add a Todo</h1>
+          
+          <div className="flex">
+          <input onChange={handleChange} value={todo} type="text" className="border-2 w-3/2 rounded-full p-2 px-2 text-lg mt-1 mb-1" placeholder='Enter a To-do'/>
+          <button onClick={handleSave} className="text-white cursor-pointer p-4 text-md py-1 mx-2 bg-violet-800 hover:bg-violet-950 rounded-full mt-1 mb-1 font-bold border-2 border-black" >Save</button>
+          </div>
           <div className="min-h-[20px] mt-1">
             {error && <p className="text-red-600 text-sm">{error}</p>}
           </div>
-          <h2 className='text-lg font-bold mt-5'>Your Todos</h2>
-          <div className="todos"> 
-            {todos.map(item => {
-              return <div key={item.id} className="todo flex justify-between w-1/4 my-3 gap-2">
-                  <div className='flex gap-5'>
-                  <input name={item.id} onChange={handleCheckbox} type="checkbox" checked={item.isCompleted} id="" />
-                  <div className={item.isCompleted ? "line-through" : ""}>{item.todo}</div>
-                  </div>
-                  <div className="buttons flex h-full">
-                    <button onClick={() => handleEdit(item.id)} className='p-2 py-1 px-3 text-sm rounded-md mx-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold '>Edit</button>
-                    <button onClick={(e) => handleDelete(e, item.id)} className='py-1 px-3 rounded-md mx-2  text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold '>Delete</button>
+
+          <div className='text-lg '>
+            <input onChange={ToggleCompleted} type="checkbox" checked={showcompleted} /> Completed Todos
+          </div>
+          <h2 className="text-xl font-bold mt-5">Your Todos</h2> 
+
+          <div className="todos">
+            {todos.length === 0 && (
+              <div className="text-lg m-5">No todos to display</div>
+            )}
+
+            {todos
+              .filter(item => showcompleted || !item.isCompleted)
+              .map((item) => (
+                <div
+                  key={item.id}
+                  className="todo flex justify-between items-start my-3 w-full max-w-2xl flex-wrap"
+                >
+                  <div className='flex gap-5 flex-wrap w-full max-w-2xl'>
+                    {/* Checkbox */}
+                    <input
+                      name={item.id}
+                      onChange={handleCheckbox}
+                      type="checkbox"
+                      checked={item.isCompleted}
+                      className="mt-1 flex-shrink-0"
+                    />
+
+                    {/* Text */}
+                    <div
+                      className={`flex-1 min-w-0 whitespace-normal break-words ml-3 ${item.isCompleted ? "line-through" : ""
+                        }`}
+                    >
+                      {item.todo}
+                    </div>
+
+
+                    {/* Buttons */}
+                    <div className="buttons flex-shrink-0 flex h-full ml-3">
+                      <button
+                        onClick={() => handleEdit(item.id)}
+                        className="text-2xl p-2 py-1 px-3 rounded-md mx-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold"><MdEdit /></button>
+                      <button
+                        onClick={(e) => handleDelete(e, item.id)}
+                        className="text-2xl py-1 px-3 rounded-md mx-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold"
+                      ><MdDelete /></button>
+                    </div>
                   </div>
                 </div>
-            })}
+              ))}
           </div>
         </div>
       </div>
+
       {showConfirm && (
         <div style={{
           position: 'fixed',
@@ -145,8 +209,8 @@ function App() {
             <div style={{ marginTop: '20px' }}>
               <button onClick={confirmDelete} style={{
                 padding: '10px 20px',
-                backgroundColor: 'rgb(79, 70, 100)',
-                color: 'black',
+                backgroundColor: 'rgb(60,39,143)',
+                color: 'white',
                 border: 'none',
                 borderRadius: '5px',
                 cursor: 'pointer',
@@ -154,8 +218,8 @@ function App() {
               }}>Yes</button>
               <button onClick={cancelDelete} style={{
                 padding: '10px 20px',
-                backgroundColor: 'rgb(79, 70, 100)',
-                color: 'black',
+                backgroundColor: 'rgb(60,39,143)',
+                color: 'white',
                 border: 'none',
                 borderRadius: '5px',
                 cursor: 'pointer'
@@ -181,8 +245,8 @@ function App() {
 
 //   function Garage() {
 //     const cars = ['Ford', 'BMW', 'Audi'];
-//     return ( 
-//     <> 
+//     return (
+//     <>
 //       <h1>Who lives in my garage?</h1>
 //       <ul>
 //         {cars.map((car) => <Car brand={car} />)}
