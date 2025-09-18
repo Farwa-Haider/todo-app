@@ -3,12 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { useState, useEffect } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
-import { MdEdit } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
+import { MdEdit, MdDelete } from "react-icons/md";
 import './App.css'
 import Navbar from './Components/Navbar';
 import { v4 as uuidv4 } from 'uuid';
-
+import Mick from './Components/Mick';
 
 function App() {
   //  
@@ -117,26 +116,28 @@ function App() {
   }
 
   return (
-    <>
+    <div className="page bg-gray-100">
+
       <Navbar />
 
-      <div className="container rounded-2xl p-5 bg-slate-300 min-h-[calc(100vh-5.5rem)] w-full sm:w-11/12 md:w-80vw lg:w-1/2 mx-auto">
-        <h1 className='font-bold text-center text-2xl'>i-Tasks Manage your To-do's at one place</h1>
+      <div className="container rounded-2xl p-5 min-h-[calc(100vh-5.5rem)] w-full sm:w-11/12 md:w-9/12 lg:w-2/3 mx-auto">
+        <h1 className='text-zinc-800 font-bold text-center text-2xl'>i-Tasks Manage your To-do's at one place</h1>
         <div className="addTodo my-5">
-          <h1 className="text-xl font-bold">Add a Todo</h1>
-          
+          <h1 className='sub text-zinc-800 text-xl font-semibold'>Add a Todo</h1>
           <div className="flex">
-          <input onChange={handleChange} value={todo} type="text" className="border-2 w-3/2 rounded-full p-2 px-2 text-lg mt-1 mb-1" placeholder='Enter a To-do'/>
-          <button onClick={handleSave} className="text-white cursor-pointer p-4 text-md py-1 mx-2 bg-violet-800 hover:bg-violet-950 rounded-full mt-1 mb-1 font-bold border-2 border-black" >Save</button>
+            <input onChange={handleChange} value={todo} type="text" className="border-2 w-full rounded-full p-2 px-2 text-lg mt-1 mb-1" placeholder='Enter a To-do' />
+            {/* <Mick /> */}
+            <Mick onAddTodo={(newTodo) => settodos((prev) => [...prev, newTodo])} />
+            <button onClick={handleSave} className="text-white cursor-pointer text-md mx-2 bg-emerald-800 hover:bg-emerald-700 rounded-3xl my-1 px-5 font-bold border-2 border-black" >Save</button>
           </div>
           <div className="min-h-[20px] mt-1">
             {error && <p className="text-red-600 text-sm">{error}</p>}
           </div>
 
-          <div className='text-lg '>
-            <input onChange={ToggleCompleted} type="checkbox" checked={showcompleted} /> Completed Todos
+          <div className='flex items-center gap-2 text-lg '>
+            <input className='accent-emerald-800 w-3.5 h-3.5' onChange={ToggleCompleted} type="checkbox" checked={showcompleted} /> Completed Todos
           </div>
-          <h2 className="text-xl font-bold mt-5">Your Todos</h2> 
+          <h2 className="text-xl font-semibold mt-5">Your Todos</h2>
 
           <div className="todos">
             {todos.length === 0 && (
@@ -150,33 +151,34 @@ function App() {
                   key={item.id}
                   className="todo flex justify-between items-start my-3 w-full max-w-2xl flex-wrap"
                 >
-                  <div className='flex gap-5 flex-wrap w-full max-w-2xl'>
-                    {/* Checkbox */}
-                    <input
-                      name={item.id}
-                      onChange={handleCheckbox}
-                      type="checkbox"
-                      checked={item.isCompleted}
-                      className="mt-1 flex-shrink-0"
-                    />
 
-                    {/* Text */}
-                    <div
-                      className={`flex-1 min-w-0 whitespace-normal break-words ml-3 ${item.isCompleted ? "line-through" : ""
-                        }`}
-                    >
-                      {item.todo}
+                  <div className='flex flex-wrap justify-between gap-5 max-w-2xl w-full my-3 items-center'>
+
+                    <div className="items-center flex gap-3 flex-1">
+                      <input
+                        name={item.id}
+                        onChange={handleCheckbox}
+                        type="checkbox"
+                        checked={item.isCompleted}
+                        className="accent-emerald-800 w-3.5 h-3.5 flex-shrink-0"
+                      />
+
+                      <div
+                        className={`flex-1 p-2 px-2 break-normal whitespace-normal min-w-0 ml-3 ${item.isCompleted ? "line-through" : ""
+                          }`}
+                      >
+                        {item.todo}
+                      </div>
                     </div>
 
-
-                    {/* Buttons */}
-                    <div className="buttons flex-shrink-0 flex h-full ml-3">
+                     <div className='buttons gap-2 flex-shrink-0 flex h-full'> 
+                       {/* ml-auto h-full justify-between */}
                       <button
                         onClick={() => handleEdit(item.id)}
-                        className="text-2xl p-2 py-1 px-3 rounded-md mx-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold"><MdEdit /></button>
+                        className="todo-btn text-lg px-1 py-2 rounded-lg mx-2 text-white cursor-pointer bg-emerald-800 hover:bg-emerald-700 font-bold"><MdEdit /></button>
                       <button
                         onClick={(e) => handleDelete(e, item.id)}
-                        className="text-2xl py-1 px-3 rounded-md mx-2 text-white cursor-pointer bg-violet-800 hover:bg-violet-950 font-bold"
+                        className="todo-btn text-lg px-1 py-2 rounded-lg mx-2 text-white cursor-pointer bg-emerald-800 hover:bg-emerald-700 font-bold"
                       ><MdDelete /></button>
                     </div>
                   </div>
@@ -209,7 +211,7 @@ function App() {
             <div style={{ marginTop: '20px' }}>
               <button onClick={confirmDelete} style={{
                 padding: '10px 20px',
-                backgroundColor: 'rgb(60,39,143)',
+                backgroundColor: 'rgb(6,78,59)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '5px',
@@ -218,7 +220,7 @@ function App() {
               }}>Yes</button>
               <button onClick={cancelDelete} style={{
                 padding: '10px 20px',
-                backgroundColor: 'rgb(60,39,143)',
+                backgroundColor: 'rgb(6,78,59)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '5px',
@@ -228,7 +230,7 @@ function App() {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
 
