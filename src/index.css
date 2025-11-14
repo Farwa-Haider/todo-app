@@ -28,7 +28,6 @@ body {
 }
 
 button {
-  /* all: unset; */
   border: 1px solid transparent;
   font-family: inherit;
   cursor: pointer;
@@ -49,5 +48,14 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@media (max-width: 640px) {
+  input, button {
+    font-size: 0.9rem;
+  }
+  .buttons button {
+    padding: 0.4em 0.8em;
   }
 }

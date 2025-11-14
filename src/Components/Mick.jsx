@@ -5,7 +5,6 @@ function Mic({ onAddTodo }) {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
 
-  // ================== Voice Assistant Setup ==================
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -19,7 +18,6 @@ function Mic({ onAddTodo }) {
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript.trim();
         if (transcript) {
-          // ✅ Voice se naya todo add karega
           const newTodo = {
             id: Date.now(),
             todo: transcript,
@@ -44,7 +42,6 @@ function Mic({ onAddTodo }) {
     }
   }, [onAddTodo]);
 
-  // ================== Voice Assistant Control ==================
   const handleListen = () => {
     if (!recognitionRef.current) return;
     if (isListening) {
@@ -56,16 +53,15 @@ function Mic({ onAddTodo }) {
     }
   };
 
-  // ================== UI ==================
   return (
     <button
       onClick={handleListen}
-      className="p-0.5 flex text-md items-center ml-2 font-bold bg-emerald-800 text-white rounded-3xl hover:bg-emerald-700 transition"
+      className="flex items-center justify-center gap-1 text-sm sm:text-md bg-emerald-800 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-3xl transition"
     >
       {isListening ? <MicOff /> : <MicIcon />}
-      {isListening ? "Stop Listening" : "Start Listening"}
+      {isListening ? "Stop" : "Voice Add"}
     </button>
-  );
+  )
 }
 
 export default Mic;
